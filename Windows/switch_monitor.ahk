@@ -1,5 +1,4 @@
-﻿# code from https://www.zhihu.com/question/337851200/answer/2301801537
-DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
+﻿DllCall("SetThreadDpiAwarenessContext", "ptr", -3, "ptr")
 CoordMode, Mouse, Screen 
 
 SysGet, MonB, MonitorWorkArea , 2
