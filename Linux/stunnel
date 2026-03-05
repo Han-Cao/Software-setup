@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# sbatch wrapper for vscode tunnel
+
+# Default values
+ACCOUNT="YOUR_ACCOUNT"
+PARTITION="intel"
+CORES=8
+TIME=5-0
+
+# Display help function
+show_help() {
+    echo "Usage: $0 [-p partition] [-c cores]"
+    echo "  -p PARTITION   Set the partition (default: intel)"
+    echo "  -c CORES       Set the number of CPU cores (default: 8)"
+    echo "  -t TIME        Set the maximum time of this job (default: 5-0)"
+    echo "  -h             Display this help message"
+    exit 0
+}
+
+# Parse command line arguments
+while getopts "p:c:t:h" opt; do
+  case $opt in
+    p)
+      PARTITION="$OPTARG"
+      ;;
+    c)
+      CORES="$OPTARG"
+      ;;
+    t)
+      TIME="$OPTARG"
+      ;;
+    h)
+      show_help
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      echo "Use -h for help" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      echo "Use -h for help" >&2
+      exit 1
+      ;;
+  esac
+done
+
+today=$(date +%Y%m%d)
+# Submit tunnel job
+/usr/bin/sbatch -A "$ACCOUNT" -J tunnel -t "$TIME" -p "$PARTITION" -N 1 -n 1 -c "$CORES" -o ~/tunnel.${today}.log --wrap='
+srun --unbuffered code tunnel user login --provider microsoft
+code tunnel
+'
